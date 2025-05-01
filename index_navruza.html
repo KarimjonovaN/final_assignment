@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wine Quality Manager</title>
+    <script>
+        const backendUrl = 'http://3.108.64.52:8000';
+
+        function fetchWines() {
+            fetch("http://3.108.64.52:8000/wines")
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("wineList");
+                    list.innerHTML = "";
+                    data.forEach(item => {
+                        const li = document.createElement("li");
+                        li.innerHTML = `<strong>Fixed Acidity:</strong> ${item[0]}, <strong>Residual Sugar:</strong> ${item[1]}, <strong>Alcohol:</strong> ${item[2]}, <strong>Density:</strong> ${item[3]}, <strong>Quality Label:</strong> ${item[4]}`;
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        function addWine() {
+            const fixedAcidity = prompt("Fixed Acidity:");
+            const residualSugar = prompt("Residual Sugar:");
+            const alcohol = prompt("Alcohol:");
+            const density = prompt("Density:");
+            const qualityLabel = prompt("Quality Label (low/medium/high):");
+
+            fetch("http://3.108.64.52:8000/add", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fixed_acidity: fixedAcidity,
+                    residual_sugar: residualSugar,
+                    alcohol: alcohol,
+                    density: density,
+                    quality_label: qualityLabel
+                })
+            }).then(fetchWines);
+        }
+
+        function deleteWine() {
+            const id = prompt("Enter ID (Fixed Acidity) of wine to delete:");
+            fetch("http://3.108.64.52:8000/delete", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            }).then(fetchWines);
+        }
+    </script>
+</head>
+<body onload="fetchWines()">
+    <h1>Wine Quality Manager</h1>
+    <button onclick="addWine()">Add Wine Entry</button>
+    <button onclick="deleteWine()">Delete Wine Entry</button>
+    <ul id="wineList"></ul>
+</body>
+</html>
